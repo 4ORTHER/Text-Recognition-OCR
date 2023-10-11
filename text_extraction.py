@@ -20,39 +20,27 @@ def draw_rec(img, txt, pos, rgb):
          2,
          cv2.LINE_AA
     )
-     
-#Find elf lvl text using recursive
-def find_elf_lvl(i, data, threshold):
-    if i <= 0:
-        return
-    
-    next_i = i - 1
-
-    if (int(data[i][1][1]) - int(data[next_i][1][1])) >= threshold:
-        data[i][0] = True
-
-    find_elf_lvl(next_i, data, threshold)
 
 #combine split text
 def combine_txt(data):
+    unnessary_element = []
     for i, txt in enumerate(data):
-        txt = txt.strip()
-        if txt[0] == 'i' and txt[-1] == ']':
-            data[i:i+2] = [''.join(data[i:i+2])]
+        if (i % 2) == 1 and (txt[1][1] - data[i-1][1][1]) <= 5:
+            unnessary_element.append(i)
+            data[i-1][0] += f' {txt[0]}'
+    return unnessary_element
 
 class TextExtraction:
-    def __init__(self, folder, destination):
-        self.folder = folder
-        self.destination = destination
+    def __init__(self):
         self.__PLAYER_NAME_THRESHOLD = 140
         self.__ELF_LVL_THRESHOLD = 35
         self.__KILLS_THRESHOLD = 350
 
-    def extract_text(self):
+    def extract_text(self, folder, destination):
         #Define path to imge folder 
-        for root, dirs, file_names in os.walk(self.folder):
+        for root, dirs, file_names in os.walk(folder):
             for file_name in file_names: #Iterate over each file name in folder
-                img = cv2.imread(self.folder + '/' + file_name) # Open image
+                img = cv2.imread(folder + '/' + file_name) # Open image
                 results = reader.readtext(img) # Get the results
                 text = []
                 kills = []
@@ -74,26 +62,33 @@ class TextExtraction:
                     try:
                         if bbox[0][0] > self.__KILLS_THRESHOLD:
                             draw_rec(img, txt, bbox, (255, 0, 0))
-                            kills.append(int(txt))
+                            kills.append(txt)
                     except:
                         print("An exception occurred")
 
-                find_elf_lvl(len(text) - 1, text, self.__ELF_LVL_THRESHOLD)
+                print('-' * 200)
+                print(' '*20 + file_name + ' '*20)
+
+                rm_element = combine_txt(text)
+                [text.pop(i) for i in rm_element]
 
                 player_name = []
-                for data in text:
-                    if type(data[0]) == type('str'):
-                        player_name.append(data[0])
-                combine_txt(player_name)
+                for i in range(len(text)):
+                    if (i % 2) == 0:
+                        player_name.append(text[i][0])
 
-                print('*'*20 + file_name + '*'*20)
+
                 player_info = {
                     'name': player_name,
                     'kills': kills
                 }
 
+                print(player_info)
+
                 # Create data frame
-                df = pd.DataFrame(player_info)
-                df.to_csv(self.destination + file_name.split()[0] + '.csv')
-                print('-' * 200)
-                print(df)
+                try:
+                    df = pd.DataFrame(player_info)
+                    df.to_csv(destination + file_name.split()[0] + '.csv')
+                    print(df)
+                except:
+                    print('Player and kills must have the same length')

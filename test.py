@@ -4,14 +4,17 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+# Create reader from easyocr
+reader = easyocr.Reader(
+    lang_list = ['en', 'th'],
+    gpu = False
+)
+
 # Define path of the image
-img_path = r'C:\Users\USER\Documents\GitHub\Text-recognition--OCR-\images\DOW-mini-tour-30\Game1\Game1Group3.png'
+img_path = r'C:\Users\USER\Documents\GitHub\Text-recognition--OCR-\images\DOW-mini-tour-30\Game1\Game1Group5.png'
 
 # Open image
 img = cv2.imread(img_path)
-
-# Create reader from easyocr
-reader = easyocr.Reader(['en', 'th'], gpu=False)
 
 # Get the results
 results = reader.readtext(img)
@@ -36,31 +39,14 @@ def draw_rec(img, pos, rgb):
          cv2.LINE_AA
     )
 
-#Find elf lvl text using recursive
-def find_elf_lvl(i):
-    if i <= 0:
-        return
-
-    next_i = i - 1
-
-    if (int(text[i][1][1]) - int(text[next_i][1][1])) >= ELF_LVL_THRESHOLD:
-        text[i][0] = True
-
-    find_elf_lvl(next_i)
-
-#combine split text
+# combine split text
 def combine_txt(data):
+    unnessary_element = []
     for i, txt in enumerate(data):
-        txt = txt.strip()
-        if txt[0] == 'i' and txt[-1] == ']':
-            data[i:i+2] = [''.join(data[i:i+2])]
-
-#Check if this is a elf lvl text
-def is_elf_lvl(i, txt):
-    if (results[i][0][0][1] - results[i - 1][0][0][1]) >= ELF_LVL_THRESHOLD or i == 0:
-        return True
-    else:
-        return False
+        if (i % 2) == 1 and (txt[1][1] - data[i-1][1][1]) <= 5:
+            unnessary_element.append(i)
+            data[i-1][0] += f' {txt[0]}'
+    return unnessary_element
 
 #Define plyer name and kills
 for i, data in enumerate(results):
@@ -68,8 +54,8 @@ for i, data in enumerate(results):
 
     bbox[0] = [int(x) for x in bbox[0]]
     bbox[2] = [int(x) for x in bbox[2]]
-
-    #Check if location is in the player name area
+    
+    # Check if location is in the player name area
     try:
         if bbox[0][0] > PLAYER_NAME_THRESHOLD and bbox[0][0] < KILLS_THRESHOLD: #and is_elf_lvl(i, txt):
             draw_rec(img, bbox, (0, 255, 0))
@@ -81,17 +67,20 @@ for i, data in enumerate(results):
     try:
         if bbox[0][0] > KILLS_THRESHOLD:
             draw_rec(img, bbox, (255, 0, 0))
-            kills.append(int(txt))
+            kills.append(txt)
     except:
         print("An exception occurred")
 
-find_elf_lvl(len(text) - 1)
+rm_element = combine_txt(text)
+[text.pop(i) for i in rm_element]
 
 player_name = []
-for i, data in enumerate(text):
-    if type(data[0]) == type('str'):
-        player_name.append(data[0])
-combine_txt(player_name)
+for i in range(len(text)):
+    if (i % 2) == 0:
+        player_name.append(text[i][0])
+
+print(player_name)
+print(kills)
 
 player_info = {
     'name': player_name,
@@ -99,8 +88,12 @@ player_info = {
 }
 
 # Create data frame
-df = pd.DataFrame(player_info)
-print(df)
+try:
+    df = pd.DataFrame(player_info)
+    print(df)
+except:
+    print('Player and kills must have the same length')
+
 
 plt.imshow(img)
 plt.show()
