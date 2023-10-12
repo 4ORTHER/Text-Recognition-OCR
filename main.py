@@ -34,10 +34,9 @@ destination2 = r'extracted_text/Game2/'
 # extract_text(r'images/DOW-mini-tour-30/game2/', destination2)
 
 
-game1 = LinkedList()
-insert_csv_to_linked_list(destination1, game1)
-game1.display()
-
-game2 = LinkedList()
-insert_csv_to_linked_list(destination2, game2)
-game2.display()
+results = LinkedList()
+insert_csv_to_linked_list(destination1, results)
+insert_csv_to_linked_list(destination2, results)
+results.display()
+results.export_to_csv('summary')
+results.export_to_excel('summary')
