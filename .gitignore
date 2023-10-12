@@ -1,4 +1,5 @@
 /images
 /output
 /.vscode
-/results
+/extracted_text
+/__pycache__
