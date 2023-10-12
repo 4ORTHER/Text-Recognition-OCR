@@ -17,10 +17,11 @@ def create_linked_list(folder: str, linked_list: LinkedList):
                 # Iterate through rows in the DataFrame and insert data into the linked list
                 for _, row in df.iterrows():
                     data = row.values
-
-                    # if type(int(data[0])) == int: 
-                    #     print(data)
-                    linked_list.insert(int(data[0]) + 1, data[1].strip(), int(data[2]))
+                    linked_list.insert(
+                         index=int(data[0]) + 1,
+                         name=data[1].strip(),
+                         kills=int(data[2])
+                    )
 
 path_folder = r'images/DOW-mini-tour-30/Game1/'
 destination_folder = r'extracted_text/Game1/'
@@ -31,3 +32,4 @@ text_extraction = TextExtraction()
 game1 = LinkedList()
 create_linked_list(destination_folder, game1)
 game1.display()
+game1.export_to_csv('game1.csv')
