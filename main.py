@@ -37,4 +37,7 @@ destination2 = r'extracted_text/Game2/'
 game1 = LinkedList()
 insert_csv_to_linked_list(destination1, game1)
 game1.display()
-game1.export_to_csv('game1')
+
+game2 = LinkedList()
+insert_csv_to_linked_list(destination2, game2)
+game2.display()
