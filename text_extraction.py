@@ -6,6 +6,7 @@ import os
 
 #Create reader from easyocr
 reader = easyocr.Reader(['en', 'th'], gpu=False)
+img_size = (410, 555)
 
 #Draw ractangle
 def draw_rec(img, txt, pos, rgb):
@@ -33,14 +34,14 @@ def combine_txt(data):
 class TextExtraction:
     def __init__(self):
         self.__PLAYER_NAME_THRESHOLD = 140
-        self.__ELF_LVL_THRESHOLD = 35
         self.__KILLS_THRESHOLD = 350
 
-    def extract_text(self, folder, destination):
+    def extract_text(self, folder: str, destination: str):
         #Define path to imge folder 
         for root, dirs, file_names in os.walk(folder):
             for file_name in file_names: #Iterate over each file name in folder
                 img = cv2.imread(folder + '/' + file_name) # Open image
+                img = cv2.resize(img, img_size) #Resize image
                 results = reader.readtext(img) # Get the results
                 text = []
                 kills = []

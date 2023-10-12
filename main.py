@@ -3,7 +3,7 @@ from linked_list import LinkedList
 import os
 import pandas as pd
 
-def create_linked_list(folder: str, linked_list: LinkedList):
+def insert_csv_to_linked_list(folder: str, linked_list: LinkedList):
         # Iterate through files in the folder
         for filename in os.listdir(folder):
             if filename.endswith('.csv'):  # Check if the file is a CSV file
@@ -23,13 +23,18 @@ def create_linked_list(folder: str, linked_list: LinkedList):
                          kills=int(data[2])
                     )
 
-path_folder = r'images/DOW-mini-tour-30/Game1/'
-destination_folder = r'extracted_text/Game1/'
+def extract_text(folder: str, destination: str):
+    text_extraction = TextExtraction()
+    text_extraction.extract_text(folder, destination)
 
-text_extraction = TextExtraction()
+destination1 = r'extracted_text/Game1/'
+destination2 = r'extracted_text/Game2/'
 
-# text_extraction.extract_text(path_folder, destination_folder)
+# extract_text(r'images/DOW-mini-tour-30/Game1/', destination1)
+# extract_text(r'images/DOW-mini-tour-30/game2/', destination2)
+
+
 game1 = LinkedList()
-create_linked_list(destination_folder, game1)
+insert_csv_to_linked_list(destination1, game1)
 game1.display()
 game1.export_to_csv('game1')

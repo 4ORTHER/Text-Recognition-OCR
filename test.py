@@ -10,11 +10,17 @@ reader = easyocr.Reader(
     gpu = False
 )
 
+img_size = (410, 555)
+
 # Define path of the image
-img_path = r'C:\Users\USER\Documents\GitHub\Text-recognition--OCR-\images\DOW-mini-tour-30\Game1\Game1Group5.png'
+img_name = '\Game2Group9.png'
+img_path = r'C:\Users\USER\Documents\GitHub\Text-recognition--OCR-\images\DOW-mini-tour-30\game2' + img_name
 
 # Open image
 img = cv2.imread(img_path)
+
+#Resize image
+img = cv2.resize(img, img_size)
 
 # Get the results
 results = reader.readtext(img)
@@ -91,6 +97,7 @@ player_info = {
 try:
     df = pd.DataFrame(player_info)
     print(df)
+    df.to_csv('extracted_text/' + 'game2/' + img_name + '.csv')
 except:
     print('Player and kills must have the same length')
 
