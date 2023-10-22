@@ -17,26 +17,29 @@ def insert_csv_to_linked_list(folder: str, linked_list: LinkedList):
                 # Iterate through rows in the DataFrame and insert data into the linked list
                 for _, row in df.iterrows():
                     data = row.values
-                    linked_list.insert(
-                         index=int(data[0]) + 1,
-                         name=data[1].strip(),
-                         kills=int(data[2])
-                    )
+                    try:
+                         linked_list.insert(
+                            index=0,
+                            name=data[1].strip(),
+                            score=int(data[2]),
+                            kills=int(data[3])
+                        )
+                    except:
+                         print('wrong type to convert')
 
-def extract_text(folder: str, destination: str):
+def extract_text(source: str, destination: str):
     text_extraction = TextExtraction()
-    text_extraction.extract_text(folder, destination)
+    text_extraction.extract_text(source, destination)
 
-destination1 = r'extracted_text/Game1/'
-destination2 = r'extracted_text/Game2/'
+destination1 = r'extracted_text/mini-tour-21-22/'
+# destination2 = r'extracted_text/mini-tour-21-22/Game2'
 
-# extract_text(r'images/DOW-mini-tour-30/Game1/', destination1)
+extract_text(r'images/mini-tour-21-22/Final/', destination1)
 # extract_text(r'images/DOW-mini-tour-30/game2/', destination2)
 
 
-results = LinkedList()
-insert_csv_to_linked_list(destination1, results)
-insert_csv_to_linked_list(destination2, results)
-results.display()
-results.export_to_csv('summary')
-results.export_to_excel('summary')
+# results = LinkedList()
+# insert_csv_to_linked_list(destination1, results)
+# results.display()
+# results.export_to_csv('summary')
+# results.export_to_excel('summary')

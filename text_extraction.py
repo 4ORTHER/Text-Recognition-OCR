@@ -3,9 +3,13 @@ import cv2
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+from tqdm import tqdm
+
+# List of languages to recognize
+languages = ['en', 'th']
 
 #Create reader from easyocr
-reader = easyocr.Reader(['en', 'th'], gpu=False)
+reader = easyocr.Reader(languages, gpu=False)
 img_size = (410, 555)
 
 #Draw ractangle
@@ -39,12 +43,19 @@ class TextExtraction:
     def extract_text(self, folder: str, destination: str):
         #Define path to imge folder 
         for root, dirs, file_names in os.walk(folder):
+            # Define the total number of iterations
+            total_iterations = len(file_names)
+
+            # Create a tqdm instance with the total number of iterations
+            progress_bar = tqdm(total=total_iterations, desc="Processing", unit="iteration")
+            
             for file_name in file_names: #Iterate over each file name in folder
                 img = cv2.imread(folder + '/' + file_name) # Open image
                 img = cv2.resize(img, img_size) #Resize image
                 results = reader.readtext(img) # Get the results
                 text = []
                 kills = []
+
                 #Define plyer name and kills
                 for i, data in enumerate(results):
                     bbox, txt, score = data
@@ -67,11 +78,14 @@ class TextExtraction:
                     except:
                         print("An exception occurred")
 
-                print('-' * 200)
-                print(' '*20 + file_name + ' '*20)
+                # print('-' * 200)
+                # print(' '*20 + file_name + ' '*20)
 
-                rm_element = combine_txt(text)
-                [text.pop(i) for i in rm_element]
+                try:
+                    rm_element = combine_txt(text)
+                    [text.pop(i) for i in rm_element]
+                except:
+                    print(f'some index out of range at {file_name}')
 
                 player_name = []
                 for i in range(len(text)):
@@ -81,15 +95,22 @@ class TextExtraction:
 
                 player_info = {
                     'name': player_name,
+                    'score': [8, 6, 5, 4, 3, 2, 1, 0],
                     'kills': kills
                 }
 
-                print(player_info)
+                # print(player_info)
 
                 # Create data frame
                 try:
                     df = pd.DataFrame(player_info)
-                    df.to_csv(destination + file_name.split()[0] + '.csv')
-                    print(df)
+                    df.to_csv(destination + file_name.split()[0] + '.csv', index=True, index_label="index")
+                    df.to_excel('output/' + file_name.split()[0] + '.xlsx', index=True, index_label="index")
+                    # print(df)
                 except:
                     print('Player and kills must have the same length')
+
+                #Update the progress bar
+                progress_bar.update(1)
+            
+            progress_bar.close()

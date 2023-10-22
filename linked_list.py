@@ -1,22 +1,11 @@
 import pandas as pd
 
-score_dict = {
-        1: 8,
-        2: 6,
-        3: 5,
-        4: 4,
-        5: 3,
-        6: 2,
-        7: 1,
-        8: 0
-}
-
 class Node:
-        def __init__(self, index: int, name: str, kills: int):
+        def __init__(self, index: int, name: str, score: int, kills: int):
                 self.index = index
                 self.name = name
+                self.score = score
                 self.kills = kills
-                self.score = score_dict.get(index)
                 self.next_node = None
 
 class LinkedList:
@@ -32,8 +21,8 @@ class LinkedList:
                 print('-'*200)
 
         # Method to insert data into the linked list
-        def insert(self, index: int, name: str, kills: int):
-                new_node = Node(index, name, kills)
+        def insert(self, index: int, name: str, score: int, kills: int):
+                new_node = Node(index, name, score, kills)
                 if self.head_node is None:
                         self.head_node = new_node
                 else:
@@ -75,13 +64,13 @@ class LinkedList:
                         current = current.next_node
 
                 df = pd.DataFrame(data, columns=['Name', 'Score', 'Kills'])
-                df.to_csv('output/' + filename + '.csv', index=True)
+                df.to_csv('output/' + filename + '.csv', index=True, index_label='index')
 
         def export_to_excel(self, filename: str):
                 data = []
                 current = self.head_node
                 while current:
-                        data.append({'Name': current.name, 'Score': current.score, 'Kills': current.kills})
+                        data.append({'Index': current.index,'Name': current.name, 'Score': current.score, 'Kills': current.kills})
                         current = current.next_node
                 df = pd.DataFrame(data)
-                df.to_excel('output/' + filename + '.xlsx', index=True)
+                df.to_excel('output/' + filename + '.xlsx', index=False)
