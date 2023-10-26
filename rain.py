@@ -2,7 +2,7 @@ import json
 from linked_list import LinkedList
 
 # Specify the path to JSON file
-json_file_path = r'checkpoint/mini-tour-21-22/final.json'
+json_file_path = r'checkpoint/mini-tour-21-22/SemiGame1.json'
 file_encoding = 'utf-8'
 
 # Read data from JSON file
@@ -20,4 +20,4 @@ for i, item in enumerate(data):
    )
 
 linkedlist.display()
-linkedlist.export_to_excel('final')
+linkedlist.export_to_excel('SemiGame1')
