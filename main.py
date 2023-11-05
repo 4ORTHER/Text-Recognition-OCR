@@ -22,7 +22,7 @@ def insert_csv_to_linked_list(folder: str, linked_list: LinkedList):
                             index=0,
                             name=data[1].strip(),
                             score=int(data[2]),
-                            kills=int(data[3])
+                            kills=float(data[3])
                         )
                     except:
                          print('wrong type to convert')

@@ -1,7 +1,7 @@
 import pandas as pd
 
 class Node:
-        def __init__(self, index: int, name: str, score: int, kills: int):
+        def __init__(self, index: int, name: str, score: int, kills: float):
                 self.index = index
                 self.name = name
                 self.score = score
@@ -21,7 +21,7 @@ class LinkedList:
                 print('-'*200)
 
         # Method to insert data into the linked list
-        def insert(self, index: int, name: str, score: int, kills: int):
+        def insert(self, index: int, name: str, score: int, kills: float):
                 new_node = Node(index, name, score, kills)
                 if self.head_node is None:
                         self.head_node = new_node
