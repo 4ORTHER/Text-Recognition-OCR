@@ -1,24 +1,35 @@
 import json
 from linked_list import LinkedList
+import os
 
-# Specify the path to JSON file
-json_file_path = r'checkpoint/big-tour-4-19/upper_bracket1.json'
-file_encoding = 'utf-8'
+folder = r'checkpoint/big-tour-4-19/knock-out/'
 
-# Read data from JSON file
-with open(json_file_path, 'r', encoding=file_encoding) as json_file:
-    data = json.load(json_file)
+for root, dirs, file_names in os.walk(folder):
+    for file_name in file_names:
+        file_encoding = 'utf-8'
+        path = folder + file_name
 
-linkedlist = LinkedList()
+        _, file_extension = os.path.splitext(path)
+        if file_extension.lower() != '.json':
+            print("Skipping non-JSON file:", path)
+            continue  # Skip to the next iteration of the loop
 
-for i, item in enumerate(data):
-   linkedlist.insert(
-       index=i+1,
-       name=item.get('Name'),
-       score=item.get('Score'),
-       kills=item.get('Kills')
-   )
+        # print(path)
 
-linkedlist.display()
-linkedlist.export_to_excel('upper_bracket1')
-linkedlist.export_to_csv('upper_bracket1')
+        # Read data from JSON file
+        with open(path, 'r', encoding=file_encoding) as json_file:
+            data = json.load(json_file)
+
+        linkedlist = LinkedList()
+
+        for i, item in enumerate(data):
+            linkedlist.insert(
+                index=i+1,
+                name=item.get('Name'),
+                score=item.get('Score'),
+                kills=item.get('Kills')
+            )
+
+        linkedlist.display()
+        linkedlist.export_to_excel(file_name)
+        linkedlist.export_to_csv(file_name)
